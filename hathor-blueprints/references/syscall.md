@@ -16,12 +16,8 @@ result = contract.public(actions=[]).transfer(
 balance = contract.view.get_balance(address=some_address)
 
 # Proxy call (delegatecall - runs other blueprint's code with current contract's state)
-result = self.syscall.proxy_call_public_method(
-    blueprint_id=other_blueprint_id,
-    method_name="method_name",
-    actions=[],
-    arg1, arg2
-)
+proxy = self.syscall.get_proxy(other_blueprint_id)
+result = proxy.public(actions=[]).method_name(arg1, arg2)
 ```
 
 ## Token Management
