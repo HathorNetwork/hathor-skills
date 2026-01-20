@@ -61,6 +61,7 @@ ctx.timestamp          # DEPRECATED - use ctx.block.timestamp
 ## Transaction (Vertex) Data
 
 ```python
+ctx.vertex.hash        # bytes (32 bytes) - transaction hash
 ctx.vertex.weight      # float
 ctx.vertex.nonce       # int
 ctx.vertex.version     # TxVersion

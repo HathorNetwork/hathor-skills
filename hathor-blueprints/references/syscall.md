@@ -57,7 +57,7 @@ self.syscall.revoke_authorities(
 contract = self.syscall.get_contract(other_contract_id)
 
 # Get balance (includes current call's actions)
-balance = self.syscall.get_current_balance(token_uid=token_uid, contract_id=None)
+balance = self.syscall.get_current_balance(token_uid=token_uid)
 
 # Get balance before current call
 balance_before = self.syscall.get_balance_before_current_call(token_uid=token_uid)
