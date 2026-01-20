@@ -1,10 +1,17 @@
 # Hathor Skills
 
-A collection of Claude Code skills for Hathor development.
+Official Claude Code skills for [Hathor Network](https://hathor.network) development.
 
 ## Available Skills
 
-- **hathor-blueprints** - Specialist skill for creating Hathor blockchain blueprints (nano contracts)
+| Skill | Description |
+|-------|-------------|
+| **hathor-blueprint** | Create Hathor blockchain blueprints (nano contracts) |
+
+## Marketplace
+
+This repository includes a `marketplace.json` file that describes all available skills. This can be used for automated skill discovery and installation.
+=======
 
 ## Installation
 

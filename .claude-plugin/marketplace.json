@@ -1,0 +1,22 @@
+{
+  "name": "hathor-skills",
+  "owner": {
+    "name": "Hathor Network",
+    "email": "contact@hathor.network"
+  },
+  "metadata": {
+    "description": "Official Claude Code skills for Hathor Network development",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "hathor-blockchain",
+      "description": "Skills for Hathor blockchain development including nano contracts (blueprints)",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/hathor-blueprints"
+      ]
+    }
+  ]
+}
