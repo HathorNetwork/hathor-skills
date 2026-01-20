@@ -1,28 +1,21 @@
 {
   "name": "hathor-skills",
-  "displayName": "Hathor Network Skills",
-  "description": "Official Claude Code skills for Hathor Network development",
-  "author": "Hathor Network",
-  "repository": "https://github.com/HathorNetwork/hathor-skills",
-  "version": "1.0.0",
-  "skills": [
+  "owner": {
+    "name": "Hathor Network",
+    "email": "dev@hathor.network"
+  },
+  "metadata": {
+    "description": "Official Claude Code skills for Hathor Network development",
+    "version": "1.0.0"
+  },
+  "plugins": [
     {
-      "name": "hathor-blueprint",
-      "path": "hathor-blueprints",
-      "description": "Create Hathor blockchain blueprints (nano contracts) - Python 3.11 smart contracts",
-      "keywords": [
-        "hathor",
-        "blockchain",
-        "smart-contracts",
-        "nano-contracts",
-        "blueprints",
-        "python"
-      ],
-      "triggers": [
-        "blueprints",
-        "nano contracts",
-        "hathor smart contracts",
-        "hathor blockchain"
+      "name": "hathor-blockchain",
+      "description": "Skills for Hathor blockchain development including nano contracts (blueprints)",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/hathor-blueprints"
       ]
     }
   ]
