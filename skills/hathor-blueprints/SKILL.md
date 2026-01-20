@@ -147,8 +147,8 @@ def withdraw(self, ctx: Context) -> None:
 ## Advanced Features
 
 Access via `self.syscall`:
-- `call_public_method()`, `call_view_method()` - Cross-contract calls
-- `create_token()`, `mint_tokens()`, `melt_tokens()` - Token management
+- `get_contract()` - Interface to call other contracts
+- `create_deposit_token()`, `create_fee_token()`, `mint_tokens()`, `melt_tokens()` - Token management
 - `get_current_balance()`, `can_mint()`, `can_melt()` - Queries
 - `rng` - Built-in deterministic RNG (ChaCha20-based)
 - `emit_event()` - Emit custom events

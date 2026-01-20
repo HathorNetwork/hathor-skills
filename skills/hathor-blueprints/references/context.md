@@ -40,9 +40,11 @@ for action in ctx.actions_list:
         token_uid = action.token_uid
         amount = action.amount
     elif isinstance(action, NCGrantAuthorityAction):
+        token_uid = action.token_uid
         mint = action.mint   # bool
         melt = action.melt   # bool
     elif isinstance(action, NCAcquireAuthorityAction):
+        token_uid = action.token_uid
         mint = action.mint
         melt = action.melt
 ```
@@ -60,7 +62,6 @@ ctx.timestamp          # DEPRECATED - use ctx.block.timestamp
 
 ```python
 ctx.vertex.hash        # bytes (32 bytes) - transaction hash
-ctx.vertex.timestamp   # int - transaction timestamp (NOT block timestamp)
 ctx.vertex.weight      # float
 ctx.vertex.nonce       # int
 ctx.vertex.version     # TxVersion
@@ -98,7 +99,7 @@ for tx_output in ctx.vertex.outputs:
 ```python
 @public
 def admin_only(self, ctx: Context) -> None:
-    if ctx.get_caller_address() != self.owner:
+    if ctx.caller_id != self.owner:
         raise NCFail("Unauthorized")
 ```
 
@@ -123,6 +124,5 @@ def deposit(self, ctx: Context) -> None:
 ## Important Notes
 
 - Context is **immutable** - cannot modify any properties
-- `ctx.block` only available after transaction is confirmed
 - Actions are validated against method permissions before execution
 - Use `get_caller_address()` / `get_caller_contract_id()` for type-safe access
