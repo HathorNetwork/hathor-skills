@@ -4,16 +4,14 @@ Official Claude Code skills for [Hathor Network](https://hathor.network) develop
 
 ## Available Skills
 
-<<<<<<< Updated upstream
-- **hathor-blueprints** - Specialist skill for creating Hathor blockchain blueprints (nano contracts)
-=======
 | Skill | Description |
 |-------|-------------|
-| **hathor-blueprint** | Create Hathor blockchain blueprints (nano contracts) - Python 3.11 smart contracts |
+| **hathor-blueprint** | Create Hathor blockchain blueprints (nano contracts) |
 
 ## Marketplace
 
 This repository includes a `marketplace.json` file that describes all available skills. This can be used for automated skill discovery and installation.
+=======
 
 ## Installation
 
@@ -75,4 +73,3 @@ Or invoke it explicitly:
 - **Automatic discovery**: Claude Code loads skills from `~/.claude/skills/` (personal) or `.claude/skills/` (project) at startup
 - **Persistent**: Personal skills are available in every new session automatically
 - **Smart triggering**: Claude uses the skill when you mention relevant keywords (blueprints, nano contracts, Hathor)
->>>>>>> Stashed changes
