@@ -123,6 +123,5 @@ def deposit(self, ctx: Context) -> None:
 ## Important Notes
 
 - Context is **immutable** - cannot modify any properties
-- `ctx.block` only available after transaction is confirmed
 - Actions are validated against method permissions before execution
 - Use `get_caller_address()` / `get_caller_contract_id()` for type-safe access
