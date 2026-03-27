@@ -41,48 +41,47 @@ Forbidden: `import x`, `hashlib`, `os`, `json`, `datetime`, `requests`, `typing.
 
 ## Forbidden Syntax (CRITICAL — validator rejects with no detail)
 
-The on-chain validator bans certain Python AST nodes. The error message is only `"forbidden syntax"` with **no line number or explanation**. You MUST avoid these from the start:
+The on-chain validator bans certain Python constructs. All validation errors surface as `"full validation failed: forbidden syntax"` with **no line number or explanation**, so you must avoid all of these from the start.
 
-| Forbidden | Error | Use instead |
-|-----------|-------|-------------|
-| `while` loops | "forbidden syntax" | `for` loops with `enumerate()` or iterate over containers |
-| String slicing `s[:n]`, `s[n:]`, `s[a:b]` | "forbidden syntax" | Use `list[str]` and index-assign elements |
-| String iteration `for c in my_str` | "forbidden syntax" | Only iterate over `list` / `set`, never `str` |
-| Nested containers `dict[K, list]`, `dict[K, dict]` | HTTP 500 | Flat `dict[str, V]` with composite keys like `f"{id}:{sub}"` |
+### AST-level restrictions (checked before execution)
 
-### Patterns to use instead
+| Forbidden | Use instead |
+|-----------|-------------|
+| `import x` (bare imports) | `from x import y` only |
+| `try`/`except` blocks | Use `if` checks to prevent errors; raise `NCFail` for contract errors |
+| `async def`, `await`, `async for`, `async with` | Not available — all execution is synchronous |
+| Float literals (`3.14`, `1.0`) | Use `int` arithmetic (cents/basis points) |
+| Complex literals (`1j`) | Not available |
+| Float division `/` | Use `//` (integer division) |
+| Dunder names (`__x__`, `__init__`) | Use `initialize()` instead of `__init__`; no magic methods |
+| Dunder text anywhere in source | Even in strings like `"__x__"` — the raw text is scanned |
+| Dunder attribute access (`x.__class__`) | Not available |
 
-**Board / grid state** — don't use `str`, use `dict[str, str]` with composite keys:
-```python
-# BAD: string board with slicing
-board: str  # "_________"
-new = board[:pos] + "X" + board[pos+1:]  # FORBIDDEN
+### Disabled builtins (raise error at runtime)
 
-# GOOD: flat dict with composite keys
-cells: dict[str, str]
-self.cells[f"{game_id}:{pos}"] = "X"  # Works!
-```
+These names exist but raise `NCDisabledBuiltinError` when called:
 
-**Searching a list** — don't use `while`, use `for` with `enumerate`:
-```python
-# BAD
-i = 0
-while i < len(self.items):  # FORBIDDEN
-    ...
+`float`, `complex`, `print`, `eval`, `exec`, `compile`, `open`, `input`,
+`getattr`, `setattr`, `delattr`, `hasattr`, `dir`, `vars`, `globals`, `locals`,
+`type`, `object`, `super`, `property`, `id`, `repr`, `ascii`,
+`issubclass`, `memoryview`, `breakpoint`, `exit`, `quit`,
+`aiter`, `anext`, `copyright`, `credits`, `license`, `help`
 
-# GOOD
-for i, item in enumerate(self.items):  # Works!
-    ...
-```
+### Available builtins
 
-**Checking all characters** — don't iterate a string:
-```python
-# BAD
-for c in my_string:  # FORBIDDEN (string iteration)
+These work normally: `abs`, `all`, `any`, `bin`, `bool`, `bytearray`, `bytes`,
+`callable`, `chr`, `classmethod`, `dict`, `divmod`, `enumerate`, `filter`,
+`format`, `frozenset`, `hash`, `hex`, `int`, `isinstance`, `iter`, `len`,
+`list`, `map`, `max`, `min`, `next`, `oct`, `ord`, `pow`, `range`, `reversed`,
+`round`, `set`, `slice`, `sorted`, `staticmethod`, `str`, `sum`, `tuple`, `zip`
 
-# GOOD: use a list[str] and iterate that
-for c in self.my_list:  # Works! (list iteration)
-```
+Note: `range` and `enumerate` are custom pure-Python reimplementations for metering.
+
+### Field declaration rules
+
+- Field names cannot start with `_` (underscore)
+- Field names `syscall` and `log` are reserved (forbidden)
+- Fields cannot have default values (e.g. `count: int = 0` is not allowed — set defaults in `initialize()`)
 
 ## Blueprint Template
 
