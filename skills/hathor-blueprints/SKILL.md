@@ -39,6 +39,51 @@ Forbidden: `import x`, `hashlib`, `os`, `json`, `datetime`, `requests`, `typing.
 5. **`@public` methods** require `ctx: Context` first param, can modify state
 6. **`@view` methods** have no `ctx`, read-only (raises `NCViewMethodError` if writes)
 
+## Forbidden Syntax (CRITICAL — validator rejects with no detail)
+
+The on-chain validator bans certain Python AST nodes. The error message is only `"forbidden syntax"` with **no line number or explanation**. You MUST avoid these from the start:
+
+| Forbidden | Error | Use instead |
+|-----------|-------|-------------|
+| `while` loops | "forbidden syntax" | `for` loops with `enumerate()` or iterate over containers |
+| String slicing `s[:n]`, `s[n:]`, `s[a:b]` | "forbidden syntax" | Use `list[str]` and index-assign elements |
+| String iteration `for c in my_str` | "forbidden syntax" | Only iterate over `list` / `set`, never `str` |
+| Nested containers `dict[K, list]`, `dict[K, dict]` | HTTP 500 | Flat `dict[str, V]` with composite keys like `f"{id}:{sub}"` |
+
+### Patterns to use instead
+
+**Board / grid state** — don't use `str`, use `dict[str, str]` with composite keys:
+```python
+# BAD: string board with slicing
+board: str  # "_________"
+new = board[:pos] + "X" + board[pos+1:]  # FORBIDDEN
+
+# GOOD: flat dict with composite keys
+cells: dict[str, str]
+self.cells[f"{game_id}:{pos}"] = "X"  # Works!
+```
+
+**Searching a list** — don't use `while`, use `for` with `enumerate`:
+```python
+# BAD
+i = 0
+while i < len(self.items):  # FORBIDDEN
+    ...
+
+# GOOD
+for i, item in enumerate(self.items):  # Works!
+    ...
+```
+
+**Checking all characters** — don't iterate a string:
+```python
+# BAD
+for c in my_string:  # FORBIDDEN (string iteration)
+
+# GOOD: use a list[str] and iterate that
+for c in self.my_list:  # Works! (list iteration)
+```
+
 ## Blueprint Template
 
 ```python
