@@ -15,7 +15,8 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/hathor-blueprints"
+        "./skills/hathor-blueprints",
+        "./skills/changelog-writer"
       ]
     }
   ]
