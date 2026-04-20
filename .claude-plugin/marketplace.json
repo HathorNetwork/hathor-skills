@@ -11,11 +11,12 @@
   "plugins": [
     {
       "name": "hathor-blockchain",
-      "description": "Skills for Hathor blockchain development including nano contracts (blueprints)",
+      "description": "Skills for Hathor blockchain development including nano contracts (blueprints) and the wallet-headless HTTP API",
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/hathor-blueprints"
+        "./skills/hathor-blueprints",
+        "./skills/hathor-wallet-headless"
       ]
     }
   ]

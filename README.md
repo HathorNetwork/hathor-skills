@@ -7,6 +7,7 @@ Official Claude Code skills for [Hathor Network](https://hathor.network) develop
 | Skill | Description |
 |-------|-------------|
 | **hathor-blueprint** | Create Hathor blockchain blueprints (nano contracts) |
+| **hathor-wallet-headless** | Interact with the Hathor wallet-headless HTTP API — wallets, tokens, NFTs, nano contracts, atomic swaps, multisig |
 
 ## Marketplace
 
@@ -66,6 +67,18 @@ The skill activates automatically when you:
 Or invoke it explicitly:
 ```
 /hathor-blueprint
+```
+
+### hathor-wallet-headless
+
+The skill activates automatically when you:
+- Mention the wallet-headless, headless wallet, or Hathor wallet API
+- Want to create/manage wallets, send HTR, create tokens/NFTs, or run nano contracts via HTTP
+- Reference `/wallet/*` endpoints or the `x-wallet-id` header
+
+Or invoke it explicitly:
+```
+/hathor-wallet-headless
 ```
 
 ## How It Works
