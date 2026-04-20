@@ -71,10 +71,10 @@ A non-recoverable change will trigger a service shutdown.
 
 ### `GET /health` — Service health
 
-**Query (all optional):**
+**Query — at least one is required** (a call with no params returns `"At least one component must be included in the health check"`):
 - `wallet_ids` — comma-separated wallet IDs to check
-- `include_fullnode` — include fullnode health
-- `include_tx_mining` — include tx-mining-service health
+- `include_fullnode=true` — include fullnode health
+- `include_tx_mining=true` — include tx-mining-service health
 
 **Response (200 on pass, 503 on fail):**
 
@@ -202,15 +202,15 @@ Errors if the address does not belong to this wallet.
 
 ### `GET /wallet/tx-history` — History of the wallet
 
-**Query:** `limit` (int, optional).
+**Query:** `limit` (int, optional) — most recent N transactions, sorted by timestamp descending.
 
-**Response:** Object keyed by tx hash → tx data.
+**Response:** array of tx objects.
 
 ```json
-{
-  "0000340349f9...": { "tx_id": "...", "version": 1, ... },
-  "0000276ec98...":  { "tx_id": "...", "version": 1, ... }
-}
+[
+  { "tx_id": "0000340349f9...", "version": 1, "timestamp": 1578430704, "is_voided": false, "inputs": [...], "outputs": [...], "parents": [...] },
+  { "tx_id": "0000276ec98...",  "version": 1, ... }
+]
 ```
 
 ---
@@ -228,25 +228,27 @@ Errors if the address does not belong to this wallet.
 | `token` | string \| object | no | Token uid (string) or deprecated `{uid, name, symbol}` object; omit for HTR |
 | `change_address` | string | no | Address for change output |
 
-**Response:**
+**Response — fields are at the top level, not nested under a `tx` key:**
 
 ```json
 {
   "success": true,
-  "message": "",
-  "tx": {
-    "hash": "00001bc7...",
-    "nonce": 33440807,
-    "timestamp": 1579656120,
-    "version": 1,
-    "weight": 16.83,
-    "parents": [...],
-    "inputs": [...],
-    "outputs": [...],
-    "tokens": []
-  }
+  "hash": "00001bc7...",
+  "nonce": 33440807,
+  "timestamp": 1579656120,
+  "version": 1,
+  "weight": 16.83,
+  "signalBits": 0,
+  "parents": ["...", "..."],
+  "inputs":  [ { "tx_id": "...", "index": 0, "data": { "type": "Buffer", "data": [...] } } ],
+  "outputs": [ { "value": 100, "tokenData": 0, "script": { "type": "Buffer", "data": [...] }, "decodedScript": { "address": { "base58": "..." }, "timelock": null }, "token_data": 0 } ],
+  "tokens": [],
+  "headers": [],
+  "_dataToSignCache": { "type": "Buffer", "data": [...] }
 }
 ```
+
+The tx hash is `.hash` (top level). Scripts come back as Node Buffer JSON; `.decodedScript.address.base58` gives the human-readable address.
 
 ---
 
@@ -275,7 +277,7 @@ Example:
 }
 ```
 
-**Response:** `{ "success": true, "message": "", "return_code": "success", "tx": {...} }`
+**Response:** same flat shape as `simple-send-tx` — `success`, `hash`, `inputs`, `outputs`, `parents`, `tokens`, etc. all at top level.
 
 Data outputs and P2PKH/P2SH outputs cannot be mixed in a single output object (but can coexist as separate outputs).
 

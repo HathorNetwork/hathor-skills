@@ -93,15 +93,18 @@ curl -X POST "$HEADLESS/wallet/stop" -H "x-wallet-id: $WALLET"
 | **Tx templates, HSM, Fireblocks, health, config** | `/wallet/tx-template/*`, `/hsm/start`, `/fireblocks/start`, `/health`, `/wallet/config/*` | [endpoints-misc.md](references/endpoints-misc.md) |
 | **End-to-end recipes** | Create wallet, fund, send, create token, mint, NFT, nano contract, swap | [examples.md](references/examples.md) |
 
-## Error Shape
+## Error Shapes
 
-All errors follow:
+Error responses are not uniform. Always check `success: false` first, then pick the right field:
 
-```json
-{ "success": false, "message": "Error description" }
-```
+| Source | Shape | Example |
+|--------|-------|---------|
+| Middleware (missing `x-wallet-id`, wallet not found) | `{ success, message, statusMessage }` | `{"success":false,"message":"Header 'X-Wallet-Id' is required.","statusMessage":""}` |
+| Wallet lifecycle (`errorCode` like `WALLET_ALREADY_STARTED`) | `{ success, message, errorCode }` | `{"success":false,"message":"Failed to start wallet with wallet id wtest","errorCode":"WALLET_ALREADY_STARTED"}` |
+| Business-logic errors (insufficient funds, invalid tx, etc.) | `{ success, error }` where `error` is a **string** | `{"success":false,"error":"Token: 00. Insufficient amount of tokens to fill the amount."}` |
+| Schema validation (bad body / query) | `{ success, error }` where `error` is an **array** of field errors | `{"success":false,"error":[{"msg":"Invalid value","param":"address","location":"body"}]}` |
 
-Some endpoints add `state` (wallet state code) or `errorCode` (e.g. `WALLET_ALREADY_STARTED`). Always check `success` before trusting the rest of the payload.
+When parsing, prefer: `.message ?? (typeof .error === "string" ? .error : .error[0].msg)`.
 
 ## Starting a Wallet: Your Options
 

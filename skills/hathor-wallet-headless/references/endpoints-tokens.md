@@ -24,26 +24,30 @@ Create custom tokens, mint/melt, create NFTs, and manage UTXOs. All endpoints re
 | `data` | string[] | no | UTF-8 data outputs to attach |
 | `version` | int | no | `1` = DEPOSIT token (default), `2` = FEE token |
 
-**Response:** Full transaction object plus token metadata:
+**Response — flat transaction object plus token metadata at the top level:**
 
 ```json
 {
-  "hash": "00c9b977...",
-  "nonce": 200,
-  "timestamp": 1610730485,
+  "success": true,
+  "hash": "00000c7aedb78f26...",
+  "nonce": 310758,
+  "timestamp": 1776719293,
   "version": 2,
-  "weight": 8.0,
+  "weight": 18.02,
+  "signalBits": 0,
   "parents": [...],
-  "inputs": [...],
+  "inputs":  [...],
   "outputs": [...],
   "tokens": [],
-  "token_name": "Test",
-  "token_symbol": "TST",
-  "configurationString": "[Test:TST:00c9b977...:a233sac]"
+  "headers": [],
+  "name": "MyToken",
+  "symbol": "MY",
+  "tokenVersion": 1,
+  "configurationString": "[MyToken:MY:00000c7a...:9b08c6a7]"
 }
 ```
 
-The token's uid is the `hash` field — save it for subsequent mint/melt/send operations.
+The token's uid is `.hash` (top level) — save it for subsequent mint/melt/send operations. `.configurationString` is the shareable `[Name:SYM:uid:checksum]` identifier.
 
 ---
 
@@ -64,7 +68,7 @@ Requires this wallet to hold the mint authority for `token`.
 | `unshift_data` | bool | no | Prepend data outputs (default: true) |
 | `data` | string[] | no | Data outputs |
 
-**Response:** Full transaction object.
+**Response:** flat transaction object — `success`, `hash`, `inputs`, `outputs`, `tokens`, `parents`, etc. at the top level (same shape as `create-token` but without `name` / `symbol` / `configurationString`).
 
 ---
 
@@ -83,7 +87,7 @@ Requires this wallet to hold the mint authority for `token`.
 | `unshift_data` | bool | no | Prepend data outputs (default: true) |
 | `data` | string[] | no | Data outputs |
 
-**Response:** Full transaction object.
+**Response:** flat transaction object — `success`, `hash`, `inputs`, `outputs`, `tokens`, `parents`, etc. at the top level (same shape as `create-token` but without `name` / `symbol` / `configurationString`).
 
 ---
 
@@ -110,7 +114,7 @@ NFTs are tokens with a data field (usually an IPFS hash). Typical amount is `1`.
 | `melt_authority_address` | string | no | |
 | `allow_external_melt_authority_address` | bool | no | Default false |
 
-**Response:** Transaction with the data embedded in the first output.
+**Response:** same flat shape as `create-token` (top-level `hash`, `configurationString`, `name`, `symbol`, `tokenVersion`, etc.) — the NFT `data` lives as a data output inside the `outputs` array.
 
 NFTs differ from `create-token` mainly in the `data` field and the defaulted-off authorities.
 
