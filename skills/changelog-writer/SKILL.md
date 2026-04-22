@@ -1,9 +1,33 @@
 ---
 name: changelog-writer
-description: Generate changelogs for Hathor release PRs and GitHub Releases. Use when bumping versions, writing release notes, or creating changelogs for bump PRs.
+description: Generate changelogs for Hathor release PRs and GitHub Releases. Use when bumping versions, writing release notes, or creating changelogs for bump PRs. Only applicable in client repositories (wallet-lib, wallet, wallet-headless, wallet-mobile, wallet-service, rpc-lib, explorer, explorer-service).
 ---
 
 # Release Changelog — Step by step
+
+## Allowed repositories
+
+This skill is scoped to client repositories only. Before proceeding, verify the current repo by running:
+
+```bash
+git remote get-url origin
+```
+
+The remote URL **must** match one of these repositories:
+
+- `HathorNetwork/hathor-rpc-lib`
+- `HathorNetwork/hathor-wallet-headless`
+- `HathorNetwork/hathor-wallet-mobile`
+- `HathorNetwork/hathor-wallet`
+- `HathorNetwork/hathor-wallet-lib`
+- `HathorNetwork/hathor-explorer`
+- `HathorNetwork/hathor-explorer-service`
+- `HathorNetwork/hathor-wallet-service`
+
+If the current repo is **not** in this list, **stop immediately** and inform the user:
+> "The changelog-writer skill is only available for client repositories (wallet-lib, wallet, wallet-headless, wallet-mobile, wallet-service, rpc-lib, explorer, explorer-service)."
+
+---
 
 This guide covers two complementary artifacts:
 - **Bump PR**: detailed description with breaking changes and migration guide
