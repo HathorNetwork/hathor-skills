@@ -7,6 +7,7 @@ Official Claude Code skills for [Hathor Network](https://hathor.network) develop
 | Skill | Description |
 |-------|-------------|
 | **hathor-blueprint** | Create Hathor blockchain blueprints (nano contracts) |
+| **changelog-writer** | Generate changelogs for release bump PRs and GitHub Releases |
 
 ## Marketplace
 
@@ -66,6 +67,18 @@ The skill activates automatically when you:
 Or invoke it explicitly:
 ```
 /hathor-blueprint
+```
+
+### changelog-writer
+
+The skill activates automatically when you:
+- Ask to write a changelog or release notes
+- Mention version bumps or release PRs
+- Need to generate a bump PR description
+
+Or invoke it explicitly:
+```
+/changelog-writer
 ```
 
 ## How It Works
