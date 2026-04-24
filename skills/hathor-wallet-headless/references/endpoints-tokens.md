@@ -6,6 +6,8 @@ Create custom tokens, mint/melt, create NFTs, and manage UTXOs. All endpoints re
 
 ### `POST /wallet/create-token` — Create a new token
 
+Creates a new custom token. The top-level `hash` in the response is the new token's uid — save it for subsequent mint/melt/send calls. `version: 1` is a DEPOSIT token (default), `version: 2` is a FEE token.
+
 **Body:**
 
 | Field | Type | Required | Notes |
@@ -74,6 +76,8 @@ Requires this wallet to hold the mint authority for `token`.
 
 ### `POST /wallet/melt-tokens` — Burn tokens back to HTR
 
+Burns `amount` of `token`, refunding the HTR deposit to the wallet (or to `deposit_address`). Requires this wallet to hold the melt authority for the token.
+
 **Body:**
 
 | Field | Type | Required | Notes |
@@ -123,6 +127,8 @@ NFTs differ from `create-token` mainly in the `data` field and the defaulted-off
 ## UTXOs
 
 ### `GET /wallet/utxo-filter` — List UTXOs matching filters
+
+Lists UTXOs owned by this wallet, filtered by token, address, and/or amount range. Use to inspect holdings before building a custom `/wallet/send-tx` with explicit inputs.
 
 **Query (all optional):**
 

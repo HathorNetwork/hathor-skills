@@ -54,6 +54,8 @@ All endpoints below require `x-wallet-id`.
 
 ### `POST /wallet/atomic-swap/tx-proposal/get-my-signatures` — Sign
 
+Produces this wallet's signature blob for the proposal. Only call when `isComplete: true`.
+
 **Body:** `partial_tx` (required).
 
 **Response:** `{ "success": true, "signatures": "PartialTxInputData|..." }`
@@ -63,6 +65,8 @@ Share this blob with the other party (or aggregator).
 ---
 
 ### `POST /wallet/atomic-swap/tx-proposal/sign` — Attach collected signatures
+
+Aggregates every participant's signature blob into a fully-signed `txHex`. Broadcast it with `/push-tx`.
 
 **Body:**
 
@@ -78,6 +82,8 @@ Share this blob with the other party (or aggregator).
 ---
 
 ### `POST /wallet/atomic-swap/tx-proposal/sign-and-push` — Sign and broadcast
+
+Combines `sign` + push in one call; use when all participants' signatures are already gathered.
 
 **Body:** `partial_tx` (required), `signatures` (string[], required).
 
@@ -96,6 +102,8 @@ Release UTXOs that were locked by `lock: true` on the proposal build.
 ---
 
 ### `GET /wallet/atomic-swap/tx-proposal/get-locked-utxos` — Inspect locks
+
+List UTXOs currently held by in-flight atomic-swap proposals on this wallet.
 
 **Response:**
 
@@ -126,6 +134,8 @@ Used when the optional service is configured (backend that stores proposals so p
 
 ### `POST /wallet/atomic-swap/tx-proposal/register/{proposalId}` — Register a proposal
 
+Register an existing proposal with the Atomic Swap Service so the other party can fetch it asynchronously.
+
 **Body:** `password` (string, required).
 
 **Response:** `{ "success": true }`
@@ -133,6 +143,8 @@ Used when the optional service is configured (backend that stores proposals so p
 ---
 
 ### `GET /wallet/atomic-swap/tx-proposal/fetch/{proposalId}` — Fetch from service
+
+Fetch a proposal that was previously registered with the Atomic Swap Service.
 
 **Response:**
 
@@ -154,11 +166,15 @@ Used when the optional service is configured (backend that stores proposals so p
 
 ### `GET /wallet/atomic-swap/tx-proposal/list` — List registered proposals
 
+Proposal IDs this wallet has registered with the Atomic Swap Service.
+
 **Response:** `{ "success": true, "proposals": ["1a574e6c-...", "85585de5-..."] }`
 
 ---
 
 ### `DELETE /wallet/atomic-swap/tx-proposal/delete/{proposalId}` — Unregister
+
+Remove a proposal from the Atomic Swap Service (usually after the swap completes or is abandoned).
 
 **Response:** `{ "success": true }`
 

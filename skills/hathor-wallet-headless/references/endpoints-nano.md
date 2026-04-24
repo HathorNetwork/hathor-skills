@@ -6,6 +6,8 @@ All endpoints under `/wallet/nano-contracts/` require `x-wallet-id`. Nano contra
 
 ### `GET /wallet/nano-contracts/state` — Contract state
 
+Read one or more fields, token balances, or view-method results from a live nano contract.
+
 **Query:**
 
 | Param | Type | Required | Notes |
@@ -43,6 +45,8 @@ fields[]=withdrawals.a'Wi8zvxdXHjaUVAoCJf52t3WovTZYcU9aX6'
 
 ### `GET /wallet/nano-contracts/history` — Contract call history
 
+Every transaction that invoked a method on this nano contract, newest first.
+
 **Query:** `id` (required), `count` (optional, default 100), `after` (optional tx hash), `before` (optional tx hash).
 
 **Response:**
@@ -69,6 +73,8 @@ fields[]=withdrawals.a'Wi8zvxdXHjaUVAoCJf52t3WovTZYcU9aX6'
 
 ### `GET /wallet/nano-contracts/oracle-data` — Resolve oracle data
 
+Resolves an oracle parameter (base58 address or raw hex) into the canonical oracle-data hex that blueprints consume.
+
 **Query:** `oracle` (required) — address (base58) or oracle data (hex).
 
 **Response:** `{ "success": true, "oracleData": "12345678" }`
@@ -76,6 +82,8 @@ fields[]=withdrawals.a'Wi8zvxdXHjaUVAoCJf52t3WovTZYcU9aX6'
 ---
 
 ### `GET /wallet/nano-contracts/oracle-signed-result` — Get a result signed by the oracle
+
+Produces an oracle-signed result blob that a blueprint can verify on-chain (e.g. to settle a bet).
 
 **Query:**
 
@@ -93,6 +101,8 @@ fields[]=withdrawals.a'Wi8zvxdXHjaUVAoCJf52t3WovTZYcU9aX6'
 ## Write endpoints
 
 ### `POST /wallet/nano-contracts/create` — Instantiate a contract from a blueprint
+
+Creates a new nano contract by calling the blueprint's `initialize` method. The response's `nc_id` (= transaction hash) is the contract ID you'll pass to future `execute` / `state` calls.
 
 **Body:**
 
@@ -117,16 +127,21 @@ Each action object's required fields depend on `type`:
 
 // Authority in/out — uses authority ("mint" or "melt"), not amount
 { "type": "grant_authority",   "token": "<token-uid>", "authority": "mint",
-  "address": "Hxxx?", "authorityAddress": "Hyyy?" }
+  "address": "Hxxx...", "authorityAddress": "Hyyy..." }
 
 { "type": "acquire_authority", "token": "<token-uid>", "authority": "mint",
   "address": "Hxxx..." }
 ```
 
 - `deposit` — send `amount` of `token` from caller into the contract.
-- `withdrawal` — pull `amount` of `token` out of the contract to `address`.
-- `grant_authority` — give the contract a mint or melt authority over `token`. `address` / `authorityAddress` are optional.
-- `acquire_authority` — take an authority from the contract out to `address` (required).
+  - `address` (optional): the caller address to pull the UTXO from. If omitted, the wallet picks any of its UTXOs.
+  - `changeAddress` (optional): where to send change.
+- `withdrawal` — pull `amount` of `token` out of the contract to `address` (required).
+- `grant_authority` — hand a mint or melt authority **over `token`** to the contract.
+  - `address` (optional): the caller address that holds the authority UTXO being spent. If omitted, the wallet picks one of its own authority UTXOs.
+  - `authorityAddress` (optional): if set, creates a **second authority output** at this address so the caller *keeps a copy* of the authority after granting. Must belong to this wallet. Omit to fully transfer the authority to the contract.
+  - `changeAddress` (optional): change address for any non-authority value pulled from the input UTXO.
+- `acquire_authority` — take a mint or melt authority out of the contract to `address` (required).
 
 ### `create_token_options` shape
 
@@ -143,6 +158,8 @@ Used when the blueprint's `initialize` will create a token as part of contract s
 ---
 
 ### `POST /wallet/nano-contracts/execute` — Call a method on an existing contract
+
+Invokes a public method on a live nano contract. `data.actions` can move tokens or authorities in/out of the contract (see Action shapes above).
 
 **Body:**
 

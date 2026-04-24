@@ -19,7 +19,7 @@ Almost every `/wallet/*` endpoint requires an `x-wallet-id` header. That header 
 curl -H "x-wallet-id: my-wallet" "$HEADLESS/wallet/balance"
 ```
 
-The root endpoints (`/start`, `/multisig-pubkey`, `/push-tx`, `/configuration-string`, `/reload-config`, `/health`) do **not** require it.
+The root endpoints (`/start`, `/multisig-pubkey`, `/push-tx`, `/configuration-string`, `/health`) do **not** require it.
 
 ### Optional API key
 
@@ -90,7 +90,8 @@ curl -X POST "$HEADLESS/wallet/stop" -H "x-wallet-id: $WALLET"
 | **Nano contracts** | `/wallet/nano-contracts/create`, `/execute`, `/state`, `/history`, `/create-on-chain-blueprint`, oracle helpers | [endpoints-nano.md](references/endpoints-nano.md) |
 | **Offline signing & P2SH** | `/wallet/tx-proposal/*`, `/wallet/p2sh/tx-proposal/*`, `/push-tx` | [endpoints-tx-proposal.md](references/endpoints-tx-proposal.md) |
 | **Atomic swap** | `/wallet/atomic-swap/tx-proposal/*` | [endpoints-atomic-swap.md](references/endpoints-atomic-swap.md) |
-| **Tx templates, HSM, Fireblocks, health, config** | `/wallet/tx-template/*`, `/hsm/start`, `/fireblocks/start`, `/health`, `/wallet/config/*` | [endpoints-misc.md](references/endpoints-misc.md) |
+| **Tx templates & per-wallet config** | `/wallet/tx-template/*`, `/wallet/config/*` | [endpoints-misc.md](references/endpoints-misc.md) |
+| **Custody integrations (enterprise)** | `/hsm/start`, `/fireblocks/start` — only use if the user has told you they're configured | [endpoints-misc.md](references/endpoints-misc.md) |
 | **End-to-end recipes** | Create wallet, fund, send, create token, mint, NFT, nano contract, swap | [examples.md](references/examples.md) |
 
 ## Error Shapes
@@ -116,8 +117,8 @@ When parsing, prefer: `.message ?? (typeof .error === "string" ? .error : .error
 | **Seed inline** | `wallet-id`, `seed` (24 words) | Testing; avoid in production (leaves seed in logs) |
 | **Read-only (xpub)** | `wallet-id`, `xpubkey` | Watch-only wallet — can query, cannot sign |
 | **MultiSig** | `wallet-id`, `multisig: true`, `multisigKey` | Multisig wallet, participants defined in config |
-| **HSM** | call `POST /hsm/start` instead | Keys live on an HSM device |
-| **Fireblocks** | call `POST /fireblocks/start` instead | Keys in Fireblocks custody |
+
+> Enterprise custody modes (`POST /hsm/start`, `POST /fireblocks/start`) exist but are **out of scope by default** — only suggest them if the user has explicitly told you they have an HSM or Fireblocks configured.
 
 Optional tuning: `passphrase`, `gapLimit`, `scanPolicy` (`gap-limit` default, or `index-limit`), `policyStartIndex`, `policyEndIndex`, `historySyncMode` (`polling_http_api` default, `xpub_stream_ws`, `manual_stream_ws`).
 

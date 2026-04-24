@@ -15,6 +15,8 @@ After either flow, use `POST /push-tx` (root) to broadcast.
 
 ### `POST /wallet/tx-proposal` — Build an unsigned tx
 
+Builds an unsigned transaction and returns its hex plus the `dataToSignHash` an external signer consumes. Use as the first step of any offline-signing flow.
+
 **Body:** same `outputs` / `inputs` / `change_address` shape as `/wallet/send-tx` (see [endpoints-core.md](endpoints-core.md)).
 
 **Response:** `{ "success": true, "txHex": "0123...", "dataToSignHash": "abcd..." }`
@@ -24,6 +26,8 @@ After either flow, use `POST /push-tx` (root) to broadcast.
 ---
 
 ### `GET /wallet/tx-proposal/get-wallet-inputs` — Which inputs belong to this wallet
+
+Lists the inputs in `txHex` that this wallet owns, along with their BIP32 paths — use when delegating signing back to the wallet for only some inputs.
 
 **Query:** `txHex` (string, required).
 
@@ -43,6 +47,8 @@ Use when delegating signing to the wallet for just some of the inputs.
 
 ### `POST /wallet/tx-proposal/add-signatures` — Attach collected signatures
 
+Applies externally-produced signatures to a proposal and returns a fully signed `txHex` ready for `/push-tx`.
+
 **Body:**
 
 ```json
@@ -61,7 +67,7 @@ Use when delegating signing to the wallet for just some of the inputs.
 
 ### `POST /wallet/tx-proposal/input-data` — Build input-data from raw signatures
 
-Converts ECDSA signatures into the wire-format input-data blob.
+Converts ECDSA signatures into the wire-format input-data blob — an intermediate step between signing and `add-signatures`.
 
 **Body (P2PKH):**
 
@@ -93,6 +99,8 @@ A P2SH wallet is started with multiple participant xpubs. A transaction needs si
 
 ### `POST /wallet/p2sh/tx-proposal` — Build unsigned P2SH tx
 
+Builds an unsigned transaction for a multisig (P2SH) wallet. Each participant then signs separately and the threshold of signatures is aggregated before broadcast.
+
 **Body:**
 
 | Field | Type | Required | Notes |
@@ -116,6 +124,8 @@ All return an unsigned `txHex`.
 
 ### `POST /wallet/p2sh/tx-proposal/get-my-signatures` — Sign with this wallet's key
 
+Produces this participant's signature blob for the P2SH transaction. Send the blob to the aggregator.
+
 **Body:** `txHex` (required).
 
 **Response:** `{ "success": true, "signatures": "..." }` — a serialized blob to share with other participants.
@@ -123,6 +133,8 @@ All return an unsigned `txHex`.
 ---
 
 ### `POST /wallet/p2sh/tx-proposal/sign` — Apply collected signatures
+
+Aggregates the participants' signature blobs into a fully-signed `txHex`. Broadcast it with `/push-tx`.
 
 **Body:** `txHex` (required), `signatures` (array of per-participant signature blobs, optional).
 
