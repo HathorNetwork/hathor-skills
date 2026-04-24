@@ -39,6 +39,50 @@ Forbidden: `import x`, `hashlib`, `os`, `json`, `datetime`, `requests`, `typing.
 5. **`@public` methods** require `ctx: Context` first param, can modify state
 6. **`@view` methods** have no `ctx`, read-only (raises `NCViewMethodError` if writes)
 
+## Forbidden Syntax (CRITICAL — validator rejects with no detail)
+
+The on-chain validator bans certain Python constructs. All validation errors surface as `"full validation failed: forbidden syntax"` with **no line number or explanation**, so you must avoid all of these from the start.
+
+### AST-level restrictions (checked before execution)
+
+| Forbidden | Use instead |
+|-----------|-------------|
+| `import x` (bare imports) | `from x import y` only |
+| `try`/`except` blocks | Use `if` checks to prevent errors; raise `NCFail` for contract errors |
+| `async def`, `await`, `async for`, `async with` | Not available — all execution is synchronous |
+| Float literals (`3.14`, `1.0`) | Use `int` arithmetic (cents/basis points) |
+| Complex literals (`1j`) | Not available |
+| Float division `/` | Use `//` (integer division) |
+| Dunder names (`__x__`, `__init__`) | Use `initialize()` instead of `__init__`; no magic methods |
+| Dunder text anywhere in source | Even in strings like `"__x__"` — the raw text is scanned |
+| Dunder attribute access (`x.__class__`) | Not available |
+
+### Disabled builtins (raise error at runtime)
+
+These names exist but raise `NCDisabledBuiltinError` when called:
+
+`float`, `complex`, `print`, `eval`, `exec`, `compile`, `open`, `input`,
+`getattr`, `setattr`, `delattr`, `hasattr`, `dir`, `vars`, `globals`, `locals`,
+`type`, `object`, `super`, `property`, `id`, `repr`, `ascii`,
+`issubclass`, `memoryview`, `breakpoint`, `exit`, `quit`,
+`aiter`, `anext`, `copyright`, `credits`, `license`, `help`
+
+### Available builtins
+
+These work normally: `abs`, `all`, `any`, `bin`, `bool`, `bytearray`, `bytes`,
+`callable`, `chr`, `classmethod`, `dict`, `divmod`, `enumerate`, `filter`,
+`format`, `frozenset`, `hash`, `hex`, `int`, `isinstance`, `iter`, `len`,
+`list`, `map`, `max`, `min`, `next`, `oct`, `ord`, `pow`, `range`, `reversed`,
+`round`, `set`, `slice`, `sorted`, `staticmethod`, `str`, `sum`, `tuple`, `zip`
+
+Note: `range` and `enumerate` are custom pure-Python reimplementations for metering.
+
+### Field declaration rules
+
+- Field names cannot start with `_` (underscore)
+- Field names `syscall` and `log` are reserved (forbidden)
+- Fields cannot have default values (e.g. `count: int = 0` is not allowed — set defaults in `initialize()`)
+
 ## Blueprint Template
 
 ```python
